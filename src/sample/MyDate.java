@@ -25,7 +25,7 @@ public class MyDate {
     }
 
     public String getMonthShortForm() {
-        String s = months[month + 1].substring(0,3);
+        String s = months[month - 1].substring(0,3);
         return s;
     }
 
