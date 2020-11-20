@@ -52,10 +52,14 @@ public class Contact {
 
     public String getHomeAddress()
     {
-        String s = "";
-        s += homeAddress.streetInfo1 + " " + homeAddress.streetInfo2 + " " + homeAddress.province + " " + homeAddress.city + " " + homeAddress.postalCode + " " + homeAddress.country;
-        return s;
+        return homeAddress.toString();
     }
+
+    public String getAddress()
+    {
+        return homeAddress.toString();
+    }
+
 
     public String getCity(){
         return homeAddress.city;
@@ -86,7 +90,11 @@ public class Contact {
         this.notes = notes;
     }
 
-    public int getBirthday() {
+    public String getBirthday() {
+        return birthday.getDay() + "/" + birthday.getMonthShortForm() + "/" + birthday.getYear();
+    }
+
+    public int getBirthDay() {
         return birthday.getDay();
     }
 

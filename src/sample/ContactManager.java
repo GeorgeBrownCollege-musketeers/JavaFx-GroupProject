@@ -29,7 +29,11 @@ public class ContactManager {
     }
 
     public Contact[] allContacts() {
-        return contactList;
+        Contact[] response = new Contact[numberOfContacts];
+        for (int i = 0; i < numberOfContacts; i++) {
+            response[i] = contactList[i];
+        }
+        return response;
     }
 
     public String viewContactsInCity(String city){
@@ -187,7 +191,7 @@ public class ContactManager {
                     System.out.println("Enter the new birth year");
                     int inputBirthYear = scanner.nextInt();
 
-                    if(inputBirthday == findContact(firstName, lastName).getBirthday() && inputBirthMonth == findContact(firstName, lastName).getBirthMonth() && inputBirthYear == findContact(firstName, lastName).getBirthYear()){
+                    if(inputBirthday == findContact(firstName, lastName).getBirthDay() && inputBirthMonth == findContact(firstName, lastName).getBirthMonth() && inputBirthYear == findContact(firstName, lastName).getBirthYear()){
                         System.out.println("New Birthday cannot be same as your last birthday");
                     }
                     findContact(firstName, lastName).setBirthday(inputBirthday);
