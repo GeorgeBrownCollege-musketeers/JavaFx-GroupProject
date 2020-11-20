@@ -1,7 +1,4 @@
 package sample;
-
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -15,9 +12,9 @@ public class ContactManager {
     }
 
     public Contact findContact(String firstName, String lastName){
-        for (Contact i : contactList){
-            if(i.getFirstName() == firstName && i.getLastName() == lastName) {
-                return i;
+        for ( int i = 0; i < numberOfContacts; i++){
+            if(contactList[i].getFirstName() == firstName && contactList[i].getLastName() == lastName) {
+                return contactList[i];
             }
         }
         return null;
@@ -25,17 +22,21 @@ public class ContactManager {
 
     public String viewAllContacts(){
         String s = "";
-        for(Contact i : contactList){
-            s += i.toString() + "\n";
+        for ( int i = 0; i < numberOfContacts; i++){
+            s += contactList[i].toString() + "\n";
         }
         return s;
     }
 
+    public Contact[] allContacts() {
+        return contactList;
+    }
+
     public String viewContactsInCity(String city){
         String s = "";
-        for(Contact i : contactList){
-            if(i.getCity() == city){
-                s += i.toString() + "\n";
+        for ( int i = 0; i < numberOfContacts; i++){
+            if(contactList[i].getCity() == city){
+                s += contactList[i].toString() + "\n";
             }
         }
         return s;
@@ -45,6 +46,7 @@ public class ContactManager {
         String s = "";
         if(findContact(firstName,lastName) != null){
             s = "Contact with same number is already been added!";
+            return s;
         }
         contactList[numberOfContacts] = new Contact(firstName, lastName, homePhone, workPhone, homeAddress, email, notes, birthday);
         numberOfContacts++;

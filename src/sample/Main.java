@@ -1,23 +1,62 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    @Override
-    public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
-        primaryStage.show();
-    }
-
-
+    private TableView table = new TableView();
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void start(Stage stage) {
+        Scene scene = new Scene(new Group());
+        stage.setTitle("Address Book");
+        stage.setWidth(960);
+        stage.setHeight(1000);
+
+        final Label label = new Label("Address Book");
+        label.setFont(new Font("Arial", 20));
+
+        table.setEditable(true);
+
+        TableColumn firstNameCol = new TableColumn("First Name");
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+
+        TableColumn lastNameCol = new TableColumn("Last Name");
+        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+
+        TableColumn phoneCol = new TableColumn("Phone");
+        TableColumn homePhoneCol = new TableColumn("Home");
+        TableColumn workPhoneCol = new TableColumn("Work");
+        phoneCol.getColumns().addAll(homePhoneCol, workPhoneCol);
+
+        TableColumn homeAddressCol = new TableColumn("Home Address");
+        TableColumn emailCol = new TableColumn("Email");
+        TableColumn birthdayCol = new TableColumn("Birthday");
+        TableColumn notesCol = new TableColumn("Notes");
+
+        table.getColumns().addAll(firstNameCol, lastNameCol, phoneCol, homeAddressCol, emailCol, birthdayCol, notesCol);
+
+        final VBox vbox = new VBox();
+        vbox.setSpacing(5);
+        vbox.setPadding(new Insets(10, 0, 0, 10));
+        vbox.getChildren().addAll(label, table);
+
+        ((Group) scene.getRoot()).getChildren().addAll(vbox);
+
+        stage.setScene(scene);
+        stage.show();
     }
 }
