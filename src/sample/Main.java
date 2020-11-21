@@ -1,16 +1,19 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class Main extends Application {
 
@@ -25,11 +28,20 @@ public class Main extends Application {
         cm.add("Fatih", "Camgoz","123","321",new Address("123 Street", "none", "Toronto", "M4J3E1", "Ontario", "Canada"), "fatih@fatih.com", "Notes Here", new MyDate(19,11,1997));
     }
 
+    public void updateTable() {
+        table.getItems().clear();
+        Contact[] contacts = cm.allContacts();
+
+        for (Contact c : contacts) {
+            table.getItems().add(c);
+        }
+    }
+
     @Override
     public void start(Stage stage) {
         Scene scene = new Scene(new Group());
         stage.setTitle("Address Book");
-        stage.setWidth(960);
+        stage.setWidth(1500);
         stage.setHeight(1000);
 
         final Label label = new Label("Address Book");
@@ -65,17 +77,122 @@ public class Main extends Application {
 
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneCol, homeAddressCol, emailCol, birthdayCol, notesCol);
 
-        Contact[] contacts = cm.allContacts();
 
-        for (Contact c : contacts) {
-            table.getItems().add(c);
-        }
+        table.setRowFactory(new Callback<TableView<Contact>, TableRow<Contact>>() {
+            @Override
+            public TableRow<Contact> call(TableView<Contact> tableView) {
+                final TableRow<Contact> row = new TableRow<>();
+                final ContextMenu contextMenu = new ContextMenu();
+                final MenuItem removeMenuItem = new MenuItem("Remove");
+                removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        cm.deleteContact(row.getItem());
+                        updateTable();
+                    }
+                });
+                contextMenu.getItems().add(removeMenuItem);
+                // Set context menu on row, but use a binding to make it only show for non-empty rows:
+                row.contextMenuProperty().bind(
+                        Bindings.when(row.emptyProperty())
+                                .then((ContextMenu)null)
+                                .otherwise(contextMenu)
+                );
+                return row ;
+            }
+        });
+
+        updateTable();
 
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
         vbox.getChildren().addAll(label, table);
 
+        vbox.setMinWidth(1000);
+
+        TextField firstNameField = new TextField();
+        firstNameField.setPromptText("First Name");
+
+        TextField lastNameField = new TextField();
+        lastNameField.setPromptText("Last Name");
+
+        TextField homePhoneField = new TextField();
+        homePhoneField.setPromptText("Home Phone");
+
+        TextField workPhoneField = new TextField();
+        workPhoneField.setPromptText("Work Phone");
+
+        TextField streetInfo1Field = new TextField();
+        streetInfo1Field.setPromptText("Street Info 1");
+
+        TextField streetInfo2Field = new TextField();
+        streetInfo2Field.setPromptText("Street Info 2");
+
+        TextField cityField = new TextField();
+        cityField.setPromptText("City");
+
+        TextField postalCodeField = new TextField();
+        postalCodeField.setPromptText("Postal Code");
+
+        TextField provinceField = new TextField();
+        provinceField.setPromptText("Province");
+
+        TextField countryField = new TextField();
+        countryField.setPromptText("Country");
+
+        TextField emailField = new TextField();
+        emailField.setPromptText("Email");
+
+        TextField notesField = new TextField();
+        notesField.setPromptText("Notes");
+
+        TextField dayOfBirthField = new TextField();
+        dayOfBirthField.setPromptText("Day of Birth");
+
+        TextField monthOfBirthField = new TextField();
+        monthOfBirthField.setPromptText("Month Of Birth");
+
+        TextField YearOfBirthField = new TextField();
+        YearOfBirthField.setPromptText("Year Of Birth");
+
+        Button addContactBtn = new Button("Add Contact");
+
+        addContactBtn.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+                cm.add(firstNameField.getText(),
+                        lastNameField.getText(),
+                        homePhoneField.getText(),
+                        workPhoneField.getText(),
+                        new Address(
+                                streetInfo1Field.getText(),
+                                streetInfo2Field.getText(),
+                                cityField.getText(),
+                                postalCodeField.getText(),
+                                provinceField.getText(),
+                                countryField.getText()),
+                        emailField.getText(),
+                        notesField.getText(),
+                        new MyDate(
+                                Integer.parseInt(dayOfBirthField.getText()),
+                                Integer.parseInt(monthOfBirthField.getText()),
+                                Integer.parseInt(YearOfBirthField.getText())
+                ));
+                updateTable();
+            }
+        });
+
+        final HBox hbox1 = new HBox();
+        final HBox hbox2 = new HBox();
+        final HBox hbox3 = new HBox();
+        final HBox hbox4 = new HBox();
+
+
+        hbox1.getChildren().addAll(firstNameField, lastNameField, homePhoneField, workPhoneField);
+        hbox2.getChildren().addAll(streetInfo1Field, streetInfo2Field, cityField, postalCodeField);
+        hbox3.getChildren().addAll(provinceField, countryField, emailField, notesField);
+        hbox4.getChildren().addAll(dayOfBirthField, monthOfBirthField, YearOfBirthField, addContactBtn);
+        vbox.getChildren().addAll(hbox1, hbox2, hbox3, hbox4);
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
 
         stage.setScene(scene);

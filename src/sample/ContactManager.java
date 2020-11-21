@@ -8,6 +8,7 @@ public class ContactManager {
 
     public ContactManager(int maxContacts){
         numberOfContacts = 0;
+        this.maxContacts = maxContacts;
         contactList = new Contact[maxContacts];
     }
 
@@ -226,5 +227,23 @@ public class ContactManager {
         }
         s = "Something went wrong";
         return s;
+    }
+
+    public void deleteContact(Contact c){
+        Contact[] newContacts = new Contact[maxContacts];
+
+        // copy all the elements in the original to proxy array except the one at index
+        for (int i = 0, k = 0; i < numberOfContacts; i++) {
+
+            // check if index is crossed, continue without copying
+            if (c == contactList[i]) {
+                continue;
+            }
+
+            // else copy the element
+            newContacts[k++] = contactList[i];
+        }
+        numberOfContacts--;
+        contactList = newContacts;
     }
 }
