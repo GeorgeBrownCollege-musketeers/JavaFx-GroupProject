@@ -3,9 +3,11 @@ package sample;
 import java.util.Date;
 
 public class Contact {
+    public int id;
     private String firstName,lastName,homePhone,workPhone,email,notes;
     private Address homeAddress;
     private MyDate birthday;
+    private static int numberOfContacts;
 
     public Contact(String firstName, String lastName, String homePhone, String workPhone, Address homeAddress, String email, String notes, MyDate birthday) {
         this.firstName = firstName;
@@ -60,6 +62,10 @@ public class Contact {
         return homeAddress.toString();
     }
 
+    public Address getAddressObject()
+    {
+        return homeAddress;
+    }
 
     public String getCity(){
         return homeAddress.city;
@@ -92,6 +98,10 @@ public class Contact {
 
     public String getBirthday() {
         return birthday.getDay() + "/" + birthday.getMonthShortForm() + "/" + birthday.getYear();
+    }
+
+    public MyDate getBirthdayObject() {
+        return birthday;
     }
 
     public int getBirthDay() {
@@ -131,6 +141,7 @@ public class Contact {
     @Override
     public String toString() {
         return "Contact{" +
+                "id='" + id + '\'' +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", homePhone='" + homePhone + '\'' +

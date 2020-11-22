@@ -14,7 +14,7 @@ public class ContactManager {
 
     public Contact findContact(String firstName, String lastName){
         for ( int i = 0; i < numberOfContacts; i++){
-            if(contactList[i].getFirstName() == firstName && contactList[i].getLastName() == lastName) {
+            if(contactList[i].getFirstName().equals(firstName) && contactList[i].getLastName().equals(lastName)) {
                 return contactList[i];
             }
         }
@@ -50,14 +50,31 @@ public class ContactManager {
     public String add(String firstName, String lastName, String homePhone, String workPhone, Address homeAddress, String email, String notes, MyDate birthday){
         String s = "";
         if(findContact(firstName,lastName) != null){
-            s = "Contact with same number is already been added!";
+            s = "Contact with same name and last name is already been added!";
             return s;
         }
         contactList[numberOfContacts] = new Contact(firstName, lastName, homePhone, workPhone, homeAddress, email, notes, birthday);
+        contactList[numberOfContacts].id = numberOfContacts;
         numberOfContacts++;
         s = "Contact " + firstName +" " + lastName + " with home phone " + homePhone + " is successfully been added!";
         return s;
     }
+
+    public void addOrEdit(String firstName, String lastName, String homePhone, String workPhone, Address homeAddress, String email, String notes, MyDate birthday){
+        if(findContact(firstName,lastName) != null){
+            for (int i = 0; i < numberOfContacts; i++) {
+                System.out.println(contactList[i].toString());
+                if (contactList[i] == findContact(firstName,lastName)) {
+                    contactList[i] = new Contact(firstName, lastName, homePhone, workPhone, homeAddress, email, notes, birthday);
+                    return;
+                }
+            }
+        }
+        contactList[numberOfContacts] = new Contact(firstName, lastName, homePhone, workPhone, homeAddress, email, notes, birthday);
+        contactList[numberOfContacts].id = numberOfContacts;
+        numberOfContacts++;
+    }
+
     public String edit(String firstName, String lastName){
         String s = "";
         Scanner scanner = new Scanner(System.in);

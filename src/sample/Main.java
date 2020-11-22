@@ -77,31 +77,6 @@ public class Main extends Application {
 
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneCol, homeAddressCol, emailCol, birthdayCol, notesCol);
 
-
-        table.setRowFactory(new Callback<TableView<Contact>, TableRow<Contact>>() {
-            @Override
-            public TableRow<Contact> call(TableView<Contact> tableView) {
-                final TableRow<Contact> row = new TableRow<>();
-                final ContextMenu contextMenu = new ContextMenu();
-                final MenuItem removeMenuItem = new MenuItem("Remove");
-                removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        cm.deleteContact(row.getItem());
-                        updateTable();
-                    }
-                });
-                contextMenu.getItems().add(removeMenuItem);
-                // Set context menu on row, but use a binding to make it only show for non-empty rows:
-                row.contextMenuProperty().bind(
-                        Bindings.when(row.emptyProperty())
-                                .then((ContextMenu)null)
-                                .otherwise(contextMenu)
-                );
-                return row ;
-            }
-        });
-
         updateTable();
 
         final VBox vbox = new VBox();
@@ -153,14 +128,14 @@ public class Main extends Application {
         TextField monthOfBirthField = new TextField();
         monthOfBirthField.setPromptText("Month Of Birth");
 
-        TextField YearOfBirthField = new TextField();
-        YearOfBirthField.setPromptText("Year Of Birth");
+        TextField yearOfBirthField = new TextField();
+        yearOfBirthField.setPromptText("Year Of Birth");
 
-        Button addContactBtn = new Button("Add Contact");
+        Button submitBtn = new Button("Submit");
 
-        addContactBtn.setOnAction(new EventHandler<ActionEvent>() {
+        submitBtn.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                cm.add(firstNameField.getText(),
+                cm.addOrEdit(firstNameField.getText(),
                         lastNameField.getText(),
                         homePhoneField.getText(),
                         workPhoneField.getText(),
@@ -176,9 +151,75 @@ public class Main extends Application {
                         new MyDate(
                                 Integer.parseInt(dayOfBirthField.getText()),
                                 Integer.parseInt(monthOfBirthField.getText()),
-                                Integer.parseInt(YearOfBirthField.getText())
+                                Integer.parseInt(yearOfBirthField.getText())
                 ));
+
+                firstNameField.setText("");
+                lastNameField.setText("");
+                homePhoneField.setText("");
+                workPhoneField.setText("");
+                streetInfo1Field.setText("");
+                streetInfo2Field.setText("");
+                cityField.setText("");
+                postalCodeField.setText("");
+                provinceField.setText("");
+                countryField.setText("");
+                emailField.setText("");
+                notesField.setText("");
+                dayOfBirthField.setText("");
+                monthOfBirthField.setText("");
+                yearOfBirthField.setText("");
+                
                 updateTable();
+            }
+        });
+
+        table.setRowFactory(new Callback<TableView<Contact>, TableRow<Contact>>() {
+            @Override
+            public TableRow<Contact> call(TableView<Contact> tableView) {
+                final TableRow<Contact> row = new TableRow<>();
+                final ContextMenu contextMenu = new ContextMenu();
+                final MenuItem removeItem = new MenuItem("Remove");
+                removeItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        cm.deleteContact(row.getItem());
+                        updateTable();
+                    }
+                });
+
+                final MenuItem editItem = new MenuItem("Edit");
+                editItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        Contact contact = row.getItem();
+                        System.out.println(contact.toString());
+                        firstNameField.setText(contact.getFirstName());
+                        lastNameField.setText(contact.getLastName());
+                        homePhoneField.setText(contact.getHomePhone());
+                        workPhoneField.setText(contact.getWorkPhone());
+                        streetInfo1Field.setText(contact.getAddressObject().streetInfo1);
+                        streetInfo2Field.setText(contact.getAddressObject().streetInfo2);
+                        cityField.setText(contact.getAddressObject().city);
+                        postalCodeField.setText(contact.getAddressObject().postalCode);
+                        provinceField.setText(contact.getAddressObject().province);
+                        countryField.setText(contact.getAddressObject().country);
+                        emailField.setText(contact.getEmail());
+                        notesField.setText(contact.getNotes());
+                        dayOfBirthField.setText(Integer.toString(contact.getBirthdayObject().getDay()));
+                        monthOfBirthField.setText(Integer.toString(contact.getBirthdayObject().getMonth()));
+                        yearOfBirthField.setText(Integer.toString(contact.getBirthdayObject().getYear()));
+                    }
+                });
+
+                contextMenu.getItems().addAll(removeItem, editItem);
+                // Set context menu on row, but use a binding to make it only show for non-empty rows:
+                row.contextMenuProperty().bind(
+                        Bindings.when(row.emptyProperty())
+                                .then((ContextMenu)null)
+                                .otherwise(contextMenu)
+                );
+                return row ;
             }
         });
 
@@ -191,7 +232,7 @@ public class Main extends Application {
         hbox1.getChildren().addAll(firstNameField, lastNameField, homePhoneField, workPhoneField);
         hbox2.getChildren().addAll(streetInfo1Field, streetInfo2Field, cityField, postalCodeField);
         hbox3.getChildren().addAll(provinceField, countryField, emailField, notesField);
-        hbox4.getChildren().addAll(dayOfBirthField, monthOfBirthField, YearOfBirthField, addContactBtn);
+        hbox4.getChildren().addAll(dayOfBirthField, monthOfBirthField, yearOfBirthField, submitBtn);
         vbox.getChildren().addAll(hbox1, hbox2, hbox3, hbox4);
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
 
