@@ -15,6 +15,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.time.LocalDate;
+
 public class Main extends Application {
 
     private TableView table = new TableView();
@@ -24,8 +26,9 @@ public class Main extends Application {
     }
 
     public void init() {
-        cm.add("Simon", "Bermudez","123","321",new Address("123 Street", "none", "Toronto", "M4J3E1", "Ontario", "Canada"), "simon@simon.com", "Notes Here", new MyDate(24,07,1997));
-        cm.add("Fatih", "Camgoz","123","321",new Address("123 Street", "none", "Toronto", "M4J3E1", "Ontario", "Canada"), "fatih@fatih.com", "Notes Here", new MyDate(19,11,1997));
+        cm.add("Simon", "Bermudez","123","321",new Address("123 Street", "", "Toronto", "M4J3E1", "Ontario", "Canada"), "simon@simon.com", "Notes Here", new MyDate(24,07,1997));
+        cm.add("Fatih", "Camgoz","123","321",new Address("123 Street", "", "Toronto", "M4J3E1", "Ontario", "Canada"), "fatih@fatih.com", "Notes Here", new MyDate(19,11,1997));
+        cm.add("Oliver", "Kmiec","123","321",new Address("123 Street", "", "Toronto", "M4J3E1", "Ontario", "Canada"), "oliver@kmiec.com", "Notes Here", new MyDate(04,07,2001));
     }
 
     public void updateTable() {
@@ -37,16 +40,32 @@ public class Main extends Application {
         }
     }
 
+    public void updateTableSearchResults(String search) {
+        table.getItems().clear();
+        Contact[] contacts = cm.allContacts();
+
+        for (Contact c : contacts) {
+            if (search != "") {
+                if(c.getFirstName().toLowerCase().contains(search.toLowerCase()) || c.getLastName().toLowerCase().contains(search.toLowerCase()) || c.getAddressObject().city.toLowerCase().contains(search.toLowerCase())) {
+                    table.getItems().add(c);
+                }
+            } else {
+                table.getItems().add(c);
+            }
+
+        }
+    }
+
     @Override
     public void start(Stage stage) {
         Scene scene = new Scene(new Group());
         stage.setTitle("Address Book");
-        stage.setWidth(1500);
+        stage.setWidth(1300);
         stage.setHeight(1000);
 
         final Label label = new Label("Address Book");
         label.setFont(new Font("Arial", 20));
-
+        
         table.setEditable(true);
 
         TableColumn firstNameCol = new TableColumn("First Name");
@@ -82,7 +101,15 @@ public class Main extends Application {
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, table);
+        
+        TextField search = new TextField();
+        search.setPromptText("Search by First Name, Last Name or City");
+        
+        search.textProperty().addListener(e -> {
+            updateTableSearchResults(search.getText());
+        });
+        
+        vbox.getChildren().addAll(label, search, table);
 
         vbox.setMinWidth(1000);
 
@@ -122,14 +149,17 @@ public class Main extends Application {
         TextField notesField = new TextField();
         notesField.setPromptText("Notes");
 
-        TextField dayOfBirthField = new TextField();
-        dayOfBirthField.setPromptText("Day of Birth");
+        DatePicker dateOfBirth = new DatePicker();
+        dateOfBirth.setPromptText("Birthday");
 
-        TextField monthOfBirthField = new TextField();
-        monthOfBirthField.setPromptText("Month Of Birth");
-
-        TextField yearOfBirthField = new TextField();
-        yearOfBirthField.setPromptText("Year Of Birth");
+//        TextField dayOfBirthField = new TextField();
+//        dayOfBirthField.setPromptText("Day of Birth");
+//
+//        TextField monthOfBirthField = new TextField();
+//        monthOfBirthField.setPromptText("Month Of Birth");
+//
+//        TextField yearOfBirthField = new TextField();
+//        yearOfBirthField.setPromptText("Year Of Birth");
 
         Button submitBtn = new Button("Submit");
 
@@ -149,9 +179,9 @@ public class Main extends Application {
                         emailField.getText(),
                         notesField.getText(),
                         new MyDate(
-                                Integer.parseInt(dayOfBirthField.getText()),
-                                Integer.parseInt(monthOfBirthField.getText()),
-                                Integer.parseInt(yearOfBirthField.getText())
+                                dateOfBirth.getValue().getDayOfMonth(),
+                                dateOfBirth.getValue().getMonthValue(),
+                                dateOfBirth.getValue().getYear()
                 ));
 
                 firstNameField.setText("");
@@ -166,9 +196,7 @@ public class Main extends Application {
                 countryField.setText("");
                 emailField.setText("");
                 notesField.setText("");
-                dayOfBirthField.setText("");
-                monthOfBirthField.setText("");
-                yearOfBirthField.setText("");
+                dateOfBirth.setValue(LocalDate.now());
                 
                 updateTable();
             }
@@ -206,9 +234,7 @@ public class Main extends Application {
                         countryField.setText(contact.getAddressObject().country);
                         emailField.setText(contact.getEmail());
                         notesField.setText(contact.getNotes());
-                        dayOfBirthField.setText(Integer.toString(contact.getBirthdayObject().getDay()));
-                        monthOfBirthField.setText(Integer.toString(contact.getBirthdayObject().getMonth()));
-                        yearOfBirthField.setText(Integer.toString(contact.getBirthdayObject().getYear()));
+                        dateOfBirth.setValue(LocalDate.of(contact.getBirthdayObject().getYear(), contact.getBirthdayObject().getMonth(), contact.getBirthdayObject().getDay()));
                     }
                 });
 
@@ -232,7 +258,7 @@ public class Main extends Application {
         hbox1.getChildren().addAll(firstNameField, lastNameField, homePhoneField, workPhoneField);
         hbox2.getChildren().addAll(streetInfo1Field, streetInfo2Field, cityField, postalCodeField);
         hbox3.getChildren().addAll(provinceField, countryField, emailField, notesField);
-        hbox4.getChildren().addAll(dayOfBirthField, monthOfBirthField, yearOfBirthField, submitBtn);
+        hbox4.getChildren().addAll(dateOfBirth, submitBtn);
         vbox.getChildren().addAll(hbox1, hbox2, hbox3, hbox4);
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
 
